@@ -1,0 +1,10 @@
+entity.bed.edit_form:
+  route_name: entity.bed.edit_form
+  group: bed
+  title: Edit
+
+entity.bed.delete_form:
+  route_name: entity.bed.delete_form
+  group: bed
+  title: Delete
+  weight: 10

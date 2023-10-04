@@ -1,0 +1,11 @@
+bed.type_add:
+  title: 'Add bed type'
+  route_name: entity.bed_type.add_form
+  appears_on:
+    - entity.bed_type.collection
+
+bed.add_page:
+  title: 'Add bed'
+  route_name: entity.bed.add_page
+  appears_on:
+    - entity.bed.collection

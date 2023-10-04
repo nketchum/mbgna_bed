@@ -1,0 +1,14 @@
+administer bed types:
+  title: 'Administer bed types'
+  description: 'Maintain the types of bed entity.'
+  restrict access: true
+access bed overview:
+  title: Access the bed overview page
+delete bed:
+  title: Delete bed
+create bed:
+  title: Create bed
+view bed:
+  title: View bed
+edit bed:
+  title: Edit bed

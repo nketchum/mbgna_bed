@@ -1,0 +1,11 @@
+entity.bed_type.collection:
+  title: 'Bed types'
+  description: 'Manage and CRUD actions on Bed type.'
+  parent: system.admin_structure
+  route_name: entity.bed_type.collection
+
+entity.bed.collection:
+  title: 'Beds'
+  route_name: view.bed.page_1
+  description: 'List of garden beds'
+  parent: system.admin_content

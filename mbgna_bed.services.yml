@@ -1,0 +1,5 @@
+services:
+  mbgna_bed.twig.BedTwigExtension:
+    class: Drupal\mbgna_bed\BedTwigExtension
+    tags:
+      - { name: twig.extension }

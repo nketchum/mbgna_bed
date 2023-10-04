@@ -1,0 +1,106 @@
+<?php
+
+/**
+ * @file
+ * Provides a bed entity type.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
+use Drupal\image\Entity\ImageStyle;
+
+/**
+ * Implements hook_theme().
+ */
+function mbgna_bed_theme() {
+  return [
+    'bed' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for bed templates.
+ *
+ * Default template: bed.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the bed information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_bed(array &$variables) {
+  // The standard content fields.
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+
+  // Get the entity.
+  $bed = $variables['elements']['#bed'];
+
+  // Get the display image url.
+  if ($bed->hasField('field_display_image')) {
+    $field = $bed->get('field_display_image');
+    $mid = $field->first()->getValue()['target_id'];
+    $media = Media::load($mid);
+    $fid = $media->field_media_image->target_id;
+    $file = File::load($fid);
+    $file_url = ImageStyle::load('large')->buildUrl($file->getFileUri());;
+    $variables['display_image_url'] = $file_url;
+  }
+
+  // Basic bed data.
+  $bundle = $bed->get($bed->getEntityType()->getKey('bundle'))->entity;
+  $variables['bed_type'] = $bundle->id();
+  $variables['bed_type_label'] = $bundle->label();
+  $variables['bed_id'] = $bed->id();
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  // $variables['display_image'] = 
+
+  // Which spaces exist in this bed?
+  $variables['bed_spaces'] = _build_bed_spaces($bed);
+}
+
+/**
+ * Helper function to determine which beds have which spaces
+ * using row/column logic.
+ * 
+ * @param  bed $bed
+ * @return array $bed_spaces
+ */
+function _build_bed_spaces($bed) {
+  
+  $bed_spaces = [
+    'rows' => [],
+  ];
+
+  if ($bed->get('field_spaces') && count($bed->get('field_spaces')->referencedEntities())) {
+    $spaces = $bed->get('field_spaces')->referencedEntities();
+    foreach ($spaces as $space) {
+      $row = $space->get('field_bed_row')->first()->getValue()['value'];
+      $column = $space->get('field_bed_column')->first()->getValue()['value'];
+      $bed_spaces['rows'][$row][$column] = $row . $column;
+    }
+  }
+
+  return $bed_spaces;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function mbgna_bed_theme_suggestions_bed(array $variables) {
+  $suggestions = [];
+  $bed = $variables['elements']['#bed'];
+  $bundle = $bed->get($bed->getEntityType()->getKey('bundle'))->entity->id();
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+  $suggestions[] = 'bed__' . $sanitized_view_mode;
+  $suggestions[] = 'bed__' . $bundle;
+  $suggestions[] = 'bed__' . $bundle . '__' . $sanitized_view_mode;
+  $suggestions[] = 'bed__' . $bed->id();
+  $suggestions[] = 'bed__' . $bed->id() . '__' . $sanitized_view_mode;
+  return $suggestions;
+}
